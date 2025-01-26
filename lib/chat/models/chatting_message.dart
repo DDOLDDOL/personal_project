@@ -8,7 +8,6 @@ class ChattingMessage {
     this.text,
     this.sender,
     this.dateTime,
-    // this.state,
     this.readers, {
     required this.isPending,
   });
@@ -18,7 +17,6 @@ class ChattingMessage {
     this.sender,
   )   : id = '',
         dateTime = null,
-        // state = MessageState.pending,
         isPending = true,
         readers = const [];
 
@@ -27,7 +25,6 @@ class ChattingMessage {
         text = data['text'] as String,
         sender = data['sender'] as String,
         dateTime = (data['createdAt'] as Timestamp).toDate(),
-        // state = (data['sent'] as bool) ? MessageState.sent : MessageState.error,
         readers = (data['readers'] as List).cast<String>().toList(),
         isPending = false;
 
@@ -35,7 +32,6 @@ class ChattingMessage {
   final String text;
   final String sender;
   final DateTime? dateTime;
-  // final MessageState state;
   final List<String> readers; // 메시지를 읽은 유저들
   final bool isPending;
 }
