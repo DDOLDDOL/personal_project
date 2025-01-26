@@ -6,20 +6,31 @@ import 'package:personal_project/chat/chat.dart';
 class ChatRepository {
   ChatRepository()
       : _database = FirebaseFirestore.instance,
-        _messageController = StreamController.broadcast() {
+        _messageStreamController = StreamController.broadcast() {
     _database
         .collection('rooms')
         .doc('room1')
         .collection('messages')
-        .snapshots()
-        .listen((data) {
-      final d = data.docChanges.map((e) => e.doc.data());
-      print(d);
-    });
+        .snapshots(source: ListenSource.cache)
+        .listen(
+      (data) {
+        final result = data.docChanges.map(
+          (changed) => changed.doc.data()!..addAll({'id': changed.doc.id}),
+        );
+
+        for (final data in result) {
+          print('------------------- ${data.toString()}');
+          _messageStreamController.sink.add(ChattingMessage.fromJson(data));
+        }
+      },
+    );
   }
 
   final FirebaseFirestore _database;
-  final StreamController<(ChattingMessage, bool)> _messageController;
+  final StreamController<ChattingMessage> _messageStreamController;
+
+  // 업데이트 되는 메시지들을 전달
+  Stream<ChattingMessage> get messageStream => _messageStreamController.stream;
 
   Future<List<ChattingRoomData>> fetchChattingRooms() async {
     // TODO: 내가 포함되어 있는 대화방만 추가
@@ -52,10 +63,6 @@ class ChatRepository {
   ) async {
     final id = DateTime.now().millisecondsSinceEpoch.toString();
 
-    _messageController.sink.add(
-      (ChattingMessage.pending(text, sender), true),
-    );
-
     _database
         .collection('rooms')
         .doc(chattingRoomId)
@@ -66,8 +73,7 @@ class ChatRepository {
         'text': text,
         'sender': sender,
         'createdAt': Timestamp.fromDate(DateTime.now()),
-        'readers': [], // 읽은 사람에 본인 추가할지 검토
-        'sent': false,
+        'readers': [sender], // 읽은 사람에 본인 추가할지 검토
       },
     ).then(
       (_) {
@@ -103,7 +109,4 @@ class ChatRepository {
     //     : mockSuccessResponse;
     // if (response.hasException) throw response.exception!;
   }
-
-  Stream<(ChattingMessage, bool)> get messageStream =>
-      _messageController.stream;
 }
