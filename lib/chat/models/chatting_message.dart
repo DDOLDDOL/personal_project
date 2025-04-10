@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:personal_project/chat/chat.dart';
 
 // TODO: 현재는 1:1 DM 기반의 메시지 모델입니다. 추후에 단톡방에 적용 가능한 메시지 모델을 만들어야 합니다.
 class ChattingMessage {

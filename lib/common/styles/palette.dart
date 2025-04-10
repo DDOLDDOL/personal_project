@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class Palette {
-  static const themeColor = Color(0xFFFF4087);
+  static const themeColor = Color(0xFF5D29FF);
+  static const googleLoginDart = Color(0xFF4285F4);
   static const buttonDisabledBackground = gray300;
   static const buttonDisabledForeground = gray;
   static const gray100 = Color(0xFFF5F8FF);

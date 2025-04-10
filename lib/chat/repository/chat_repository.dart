@@ -1,59 +1,120 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:personal_project/auth/auth.dart';
 import 'package:personal_project/chat/chat.dart';
+import 'package:personal_project/common/hives/auth_hive.dart';
 
 class ChatRepository {
   ChatRepository()
       : _database = FirebaseFirestore.instance,
-        _messageStreamController = StreamController.broadcast() {
+        _roomController = StreamController.broadcast();
+  // _messageStreamController = StreamController.broadcast();
+
+  final FirebaseFirestore _database;
+  final StreamController<List<ChattingRoomData>> _roomController;
+  // final StreamController<ChattingMessage> _messageStreamController;
+
+  // 업데이트 되는 메시지들을 전달
+  // Stream<ChattingMessage> get messageStream => _messageStreamController.stream;
+
+  // 업데이트 되는 방 정보들을 전달
+  Stream<List<ChattingRoomData>> get roomStream => _roomController.stream;
+
+  Future<User> searchUserByEmail(String email) async {
+    if (email == AuthHive.instance.email) throw Exception('검색 결과가 없습니다');
+
+    final result = await _database
+        .collection('users')
+        .where('email', isEqualTo: email)
+        .get();
+
+    final user = result.docs
+        .map((doc) => doc.data()..addAll({'id': doc.id}))
+        .map(User.fromJson)
+        .firstOrNull;
+
+    if (user == null) throw Exception('검색 결과가 없습니다');
+    return user;
+  }
+
+  void startListenChattingRooms() {
     _database
         .collection('rooms')
-        .doc('room1')
-        .collection('messages')
-        .snapshots(source: ListenSource.cache)
+        .where('participants', arrayContains: AuthHive.instance.email)
+        .snapshots(
+            // source: ListenSource.cache,
+            )
         .listen(
       (data) {
-        final result = data.docChanges.map(
-          (changed) => changed.doc.data()!..addAll({'id': changed.doc.id}),
+        final result = data.docs.map(
+          (doc) => doc.data()..addAll({'id': doc.id}),
         );
 
-        for (final data in result) {
-          print('------------------- ${data.toString()}');
-          _messageStreamController.sink.add(ChattingMessage.fromJson(data));
-        }
+        _roomController.sink.add(
+          result.map(ChattingRoomData.fromJson).toList(),
+        );
       },
     );
   }
 
-  final FirebaseFirestore _database;
-  final StreamController<ChattingMessage> _messageStreamController;
+  // Future<List<ChattingRoomData>> fetchChattingRooms() async {
+  //   // TODO: 내가 포함되어 있는 대화방만 추가
+  //   // final result = await _database.collection('rooms').where('field', ).get();
+  //   final result = await _database.collection('rooms').get();
 
-  // 업데이트 되는 메시지들을 전달
-  Stream<ChattingMessage> get messageStream => _messageStreamController.stream;
+  //   return result.docs
+  //       .map((doc) {
+  //         print('data from cache? ${doc.metadata.isFromCache}');
 
-  Future<List<ChattingRoomData>> fetchChattingRooms() async {
-    // TODO: 내가 포함되어 있는 대화방만 추가
-    // final result = await _database.collection('rooms').where('field', ).get();
-    final result = await _database.collection('rooms').get();
+  //         return doc.data()..addAll({'id': doc.id});
+  //       })
+  //       .map(ChattingRoomData.fromJson)
+  //       .toList();
+  // }
 
-    return result.docs
-        .map((doc) => doc.data()..addAll({'id': doc.id}))
-        .map(ChattingRoomData.fromJson)
-        .toList();
+  Future<ChattingRoomData> createChattingRoom(String withWhom) async {
+    try {
+      final me = AuthHive.instance.email;
+
+      if (me == null) {
+        throw Exception('계정 정보가 만료되었습니다. 다시 로그인 해주세요.');
+      }
+
+      // if ((await _database.collection('rooms').where('participants', arrayContains: [me, withWhom]).get()).)
+
+      final result = await _database.collection('rooms').add(
+        {
+          'participants': [me, withWhom],
+        },
+      );
+
+      final roomDataMap = (await result.get()).data();
+      roomDataMap?['id'] = result.id;
+      roomDataMap?['participant'] = result.id;
+
+      if (roomDataMap == null) {
+        throw Exception('생성된 채팅방의 정보를 불러올 수 없습니다.');
+      }
+
+      return ChattingRoomData.fromJson(roomDataMap);
+    } on Exception {
+      rethrow;
+    }
   }
 
   Future<List<ChattingMessage>> fetchMessages(String chattingRoomId) async {
-    final result = await _database
-        .collection('rooms')
-        .doc(chattingRoomId)
-        .collection('messages')
-        .get();
+    return [];
+    // final result = await _database
+    //     .collection('rooms')
+    //     .doc(chattingRoomId)
+    //     .collection('messages')
+    //     .get();
 
-    return result.docs
-        .map((doc) => doc.data()..addAll({'id': doc.id}))
-        .map(ChattingMessage.fromJson)
-        .toList();
+    // return result.docs
+    //     .map((doc) => doc.data()..addAll({'id': doc.id}))
+    //     .map(ChattingMessage.fromJson)
+    //     .toList();
   }
 
   Future<void> sendMessage(

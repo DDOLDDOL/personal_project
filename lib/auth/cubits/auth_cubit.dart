@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:personal_project/auth/auth.dart';
+import 'package:personal_project/common/common.dart';
 
 part 'auth_state.dart';
 part 'auth_cubit.freezed.dart';
@@ -22,9 +23,13 @@ class AuthCubit extends Cubit<AuthState> {
       emit(
         AuthState.error(
           '로그인 요청에 실패했습니다',
-          error.toString(),
+          error.toString().split('Exception: ').last,
         ),
       );
     }
+  }
+
+  Future<void> logout() {
+    return _repository.logout(AuthHive.instance.oAuthProvider!);
   }
 }

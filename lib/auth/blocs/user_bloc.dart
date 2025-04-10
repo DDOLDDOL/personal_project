@@ -18,8 +18,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         .watchUser()
         .listen((user) => add(UserEvent.userUpdateRequested(user)));
 
-    on<_LoginRequested>(_onLoginRequested);
-    on<_LogoutRequested>(_onLogoutRequested);
     on<_UserUpdateRequested>(_onUserUpdateRequested);
   }
 
@@ -33,32 +31,12 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   final AuthRepository _repository;
   late final StreamSubscription<User?> _userSubscription;
 
-  Future<void> _onLoginRequested(
-    _LoginRequested event,
-    Emitter<UserState> emit,
-  ) async {
-    emit(state.copyWith(isFetching: true));
-
-    try {
-      await _repository.requestOAuthLogin(event.platform);
-    } on Exception catch (exception) {
-      final errorMessage = exception.toString().split('Exception: ').last;
-      emit(UserState(errorMessage: errorMessage));
-    }
-  }
-
-  Future<void> _onLogoutRequested(
-    _LogoutRequested event,
-    Emitter<UserState> emit,
-  ) {
-    return _repository.logout(state.user?.oAuthPlatform);
-  }
-
-  void _onUserUpdateRequested(
+  Future<void> _onUserUpdateRequested(
     _UserUpdateRequested event,
     Emitter<UserState> emit,
-  ) {
-    emit(UserState(user: event.user));
+  ) async {
+    if (event.user == null) return emit(const UserState());
+    emit(UserState(user: event.user!));
   }
 
   @override

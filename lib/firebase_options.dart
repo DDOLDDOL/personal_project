@@ -49,21 +49,20 @@ class DefaultFirebaseOptions {
     }
   }
 
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: 'AIzaSyDE5nb71OrghFr5XLGiTPNQk1n37555tDc',
+    appId: '1:177931759926:android:8875f004b45beadebfc397',
+    messagingSenderId: '177931759926',
+    projectId: 'communication-kit',
+    storageBucket: 'communication-kit.firebasestorage.app',
+  );
+
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAuB2XVHmWb2Dl7zrdLktBMDDqCT-kP9T8',
-    appId: '1:44317517049:ios:ad366698ad58989d8c2e28',
-    messagingSenderId: '44317517049',
-    projectId: 'petcy-fb6e0',
-    storageBucket: 'petcy-fb6e0.firebasestorage.app',
+    apiKey: 'AIzaSyAXEJuOhh37fafKUpdmtDtccytEslcrD0g',
+    appId: '1:177931759926:ios:dad46e2bd6d57806bfc397',
+    messagingSenderId: '177931759926',
+    projectId: 'communication-kit',
+    storageBucket: 'communication-kit.firebasestorage.app',
     iosBundleId: 'com.ddolddol.personalProject',
   );
-
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAP_LIypPWOHmE-E0s4_777JY2LUK5dPgE',
-    appId: '1:44317517049:android:3bd2e3926d1ae6138c2e28',
-    messagingSenderId: '44317517049',
-    projectId: 'petcy-fb6e0',
-    storageBucket: 'petcy-fb6e0.firebasestorage.app',
-  );
-
 }

@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:personal_project/auth/auth.dart';
-import 'package:personal_project/auth/models/oauth_result.dart';
 
 class OAuthClient {
   OAuthClient()

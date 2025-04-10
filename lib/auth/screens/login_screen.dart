@@ -1,23 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:personal_project/auth/auth.dart';
-import 'package:personal_project/auth/cubits/auth_cubit.dart';
 import 'package:personal_project/common/common.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => AuthCubit(context.read<AuthRepository>()),
-      child: const _LoginView(),
-    );
-  }
-}
-
-class _LoginView extends StatelessWidget {
-  const _LoginView({super.key});
 
   @override
   Widget build(BuildContext context) {

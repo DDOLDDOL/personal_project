@@ -13,6 +13,7 @@ class TextInputField extends StatelessWidget {
     this.focusNode,
     this.onChanged,
     this.onTap,
+    this.onFieldSubmitted,
     this.contentPadding = const EdgeInsets.symmetric(
       horizontal: 16,
       vertical: 16,
@@ -27,7 +28,8 @@ class TextInputField extends StatelessWidget {
     this.maxLength,
     this.maxValue,
     this.maxLines = 1,
-    this.hintStyle = const TextStyle(color: Colors.grey, fontWeight: FontWeight.normal),
+    this.hintStyle =
+        const TextStyle(color: Colors.grey, fontWeight: FontWeight.normal),
     this.textStyle = const TextStyle(fontSize: 14),
     this.floatingLabelStyle = const TextStyle(color: Colors.black),
     this.prefixIcon,
@@ -50,6 +52,7 @@ class TextInputField extends StatelessWidget {
     this.errorMaxLines,
     this.textAlign = TextAlign.start,
     this.textAlignVertical,
+    this.textInputAction,
   }) : super(key: key);
 
   final FocusNode? focusNode;
@@ -90,6 +93,8 @@ class TextInputField extends StatelessWidget {
   final int? errorMaxLines;
   final TextAlign textAlign;
   final TextAlignVertical? textAlignVertical;
+  final TextInputAction? textInputAction;
+  final void Function(String)? onFieldSubmitted;
 
   @override
   Widget build(BuildContext context) {
@@ -121,6 +126,8 @@ class TextInputField extends StatelessWidget {
                   LengthLimitingTextInputFormatter(maxLength),
                   if (maxValue != null) _MaxNumberTextInputFormatter(maxValue!),
                 ],
+                onFieldSubmitted: onFieldSubmitted,
+                textInputAction: textInputAction,
                 textAlign: textAlign,
                 textAlignVertical: textAlignVertical,
                 enabled: enabled,

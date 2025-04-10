@@ -1,0 +1,2 @@
+const kakaoRestApiKey = '';
+const kakaoReverseGeocodingApiUrl = '';

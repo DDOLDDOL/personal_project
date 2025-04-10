@@ -56,7 +56,7 @@ class SubmitButton extends StatelessWidget {
       ),
       onPressed: loadingWhen ? () {} : onPressed,
       child: loadingWhen
-          ? _loadingIndicator
+          ? _loadingIndicator()
           : _Child(
               content: child,
               foregroundColor: onPressed == null
@@ -66,10 +66,13 @@ class SubmitButton extends StatelessWidget {
     );
   }
 
-  Widget get _loadingIndicator => const SpinKitThreeBounce(
-        color: Colors.white,
-        size: 18,
-      );
+  Widget _loadingIndicator() {
+    return SizedBox(
+      width: 20,
+      height: 20,
+      child: CircularProgressIndicator(color: enabledButtonTextColor),
+    );
+  }
 }
 
 class _Child extends StatelessWidget {
@@ -101,7 +104,7 @@ class _Child extends StatelessWidget {
   }
 
   TextStyle get _defaultTextStyle {
-    return TextStyles.accent.copyWith(color: Colors.white);
+    return TextStyles.semiAccent.copyWith(color: Colors.white);
   }
 }
 
